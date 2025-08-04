@@ -1,6 +1,6 @@
 project (unittest)
 
-file(GLOB_RECURSE CPP_FILES *.cpp)
+file(GLOB_RECURSE CPP_FILES ${CMAKE_SOURCE_DIR}/test/*.cpp)
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
