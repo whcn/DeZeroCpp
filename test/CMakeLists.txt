@@ -2,7 +2,9 @@ project (unittest)
 
 file(GLOB_RECURSE CPP_FILES *.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/thirdparty
+include_directories(
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/thirdparty
         ${CMAKE_SOURCE_DIR}/thirdparty/googletest/include/)
 
 link_directories(${CMAKE_SOURCE_DIR}/thirdparty/googletest/lib)
