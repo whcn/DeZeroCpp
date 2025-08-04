@@ -3,4 +3,6 @@ project(DeZeroCpp)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(DeZeroCpp main.cpp)
+include_directories(thirdparty)
+
+add_executable(${PROJECT_NAME} src/main.cpp)
