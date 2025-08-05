@@ -32,4 +32,12 @@ protected:
     }
 };
 
+class Exponential : public Function {
+protected:
+    Eigen::MatrixXd forward(const Eigen::MatrixXd& x) override {
+        Eigen::MatrixXd result = x.array().exp();
+        return result;
+    }
+};
+
 #endif//DEZEROCPP_FUNCTION_H
