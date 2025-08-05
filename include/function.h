@@ -10,7 +10,7 @@ public:
     virtual ~Function() = default;
 
     Variable operator()(const Variable& input) {
-        x = input.GetData();
+        x = input.data_;
         y = forward(x);
         return Variable(y);
     }
