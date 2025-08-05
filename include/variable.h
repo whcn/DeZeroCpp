@@ -18,6 +18,7 @@ public:
 
 public:
     Eigen::MatrixXd data_;
+    Eigen::MatrixXd grad_;
 };
 
 #endif//DEZEROCPP_VARIABLE_H

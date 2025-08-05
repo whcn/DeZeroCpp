@@ -23,3 +23,23 @@ TEST(FUNCTION, EXPONENTIAL) {
 
     std::cout << "Exponential:\n" << y << std::endl;
 }
+
+TEST(FUNCTION, BACKWARD) {
+    Eigen::MatrixXd data(1, 1);
+    data << 0.5;
+
+    Square f1;
+    Exponential f2;
+    Square f3;
+    Variable x(data);
+    Variable y1 = f1(x);
+    Variable y2 = f2(y1);
+    Variable y3 = f3(y2);
+
+    y3.grad_ = Eigen::MatrixXd::Ones(1, 1);
+    y2.grad_ = f3.Backward(y3.grad_);
+    y1.grad_ = f2.Backward(y2.grad_);
+    x.grad_ = f1.Backward(y1.grad_);
+
+    std::cout << "Backward:\n" << x.grad_ << std::endl;
+}

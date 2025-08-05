@@ -15,28 +15,39 @@ public:
         return Variable(y);
     }
 
-protected:
     virtual Eigen::MatrixXd Forward(const Eigen::MatrixXd& x) = 0;
 
-private:
+    virtual Eigen::MatrixXd Backward(const Eigen::MatrixXd& gy) = 0;
+
+protected:
     Eigen::MatrixXd x;
     Eigen::MatrixXd y;
 };
 
 
 class Square : public Function {
-protected:
+public:
     Eigen::MatrixXd Forward(const Eigen::MatrixXd& x) override {
         Eigen::MatrixXd result = x.cwiseProduct(x);
         return result;
     }
+
+    Eigen::MatrixXd Backward(const Eigen::MatrixXd& gy) override {
+        Eigen::MatrixXd gx = 2 * x * gy;
+        return gx;
+    }
 };
 
 class Exponential : public Function {
-protected:
+public:
     Eigen::MatrixXd Forward(const Eigen::MatrixXd& x) override {
         Eigen::MatrixXd result = x.array().exp();
         return result;
+    }
+
+    Eigen::MatrixXd Backward(const Eigen::MatrixXd& gy) override {
+        Eigen::MatrixXd gx = static_cast<Eigen::MatrixXd>(x.array().exp()) * gy;
+        return gx;
     }
 };
 
