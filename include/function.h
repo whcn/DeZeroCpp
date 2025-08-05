@@ -11,12 +11,12 @@ public:
 
     Variable operator()(const Variable& input) {
         x = input.data_;
-        y = forward(x);
+        y = Forward(x);
         return Variable(y);
     }
 
 protected:
-    virtual Eigen::MatrixXd forward(const Eigen::MatrixXd& x) = 0;
+    virtual Eigen::MatrixXd Forward(const Eigen::MatrixXd& x) = 0;
 
 private:
     Eigen::MatrixXd x;
@@ -26,7 +26,7 @@ private:
 
 class Square : public Function {
 protected:
-    Eigen::MatrixXd forward(const Eigen::MatrixXd& x) override {
+    Eigen::MatrixXd Forward(const Eigen::MatrixXd& x) override {
         Eigen::MatrixXd result = x.cwiseProduct(x);
         return result;
     }
@@ -34,7 +34,7 @@ protected:
 
 class Exponential : public Function {
 protected:
-    Eigen::MatrixXd forward(const Eigen::MatrixXd& x) override {
+    Eigen::MatrixXd Forward(const Eigen::MatrixXd& x) override {
         Eigen::MatrixXd result = x.array().exp();
         return result;
     }
