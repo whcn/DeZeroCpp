@@ -7,7 +7,7 @@ file(GLOB_RECURSE CPP_FILES
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/thirdparty
+        ${CMAKE_SOURCE_DIR}/thirdparty/eigen-3.4.0
         ${CMAKE_SOURCE_DIR}/thirdparty/googletest/include/)
 
 link_directories(${CMAKE_SOURCE_DIR}/thirdparty/googletest/lib)

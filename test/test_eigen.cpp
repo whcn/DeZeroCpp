@@ -1,3 +1,4 @@
+#include <unsupported/Eigen/CXX11/Tensor>
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -11,4 +12,10 @@ TEST(EIGEN, MatrixRandom) {
     // 创建3维向量并初始化（类似np.array([1,2,3])）
     Eigen::Vector3d vec(1.0, 2.0, 3.0);
     std::cout << "向量:\n" << vec << std::endl;
+}
+
+TEST(EIGEN, TENSOR) {
+    Eigen::Tensor<float, 4> tensor(2, 3, 4, 5);
+    std::cout << tensor << std::endl;
+    std::cout << tensor.dimensions() << std::endl;
 }
