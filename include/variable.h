@@ -5,13 +5,19 @@
 #include <iostream>
 #include <utility>
 
+class Function;
+
 class Variable {
 public:
     Variable() = default;
 
     explicit Variable(Eigen::MatrixXd &data) : data_(std::move(data)) {}
 
-    friend std::ostream& operator<<(std::ostream& os, const Variable& var) {
+    void SetCreator(Function *creator);
+
+    void Backward();
+
+    friend std::ostream &operator<<(std::ostream &os, const Variable &var) {
         os << var.data_;
         return os;
     }
@@ -19,6 +25,7 @@ public:
 public:
     Eigen::MatrixXd data_;
     Eigen::MatrixXd grad_;
+    Function *creator_ = nullptr;
 };
 
 #endif//DEZEROCPP_VARIABLE_H

@@ -43,3 +43,21 @@ TEST(FUNCTION, BACKWARD) {
 
     std::cout << "Backward:\n" << x.grad_ << std::endl;
 }
+
+TEST(FUNCTION, BACKWARD_WITH_CREATOR) {
+    Eigen::MatrixXd data(1, 1);
+    data << 0.5;
+
+    Square f1;
+    Exponential f2;
+    Square f3;
+    Variable x(data);
+    Variable &y1 = f1(x);
+    Variable &y2 = f2(y1);
+    Variable &y3 = f3(y2);
+
+    y3.grad_ = Eigen::MatrixXd::Ones(1, 1);
+    y3.Backward();
+
+    std::cout << "Backward:\n" << x.grad_ << std::endl;
+}
