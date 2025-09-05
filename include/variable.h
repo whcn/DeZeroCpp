@@ -13,7 +13,7 @@ public:
 
     explicit Variable(Eigen::MatrixXd &data) : data_(std::move(data)) {}
 
-    void SetCreator(Function *creator);
+    void SetCreator(std::shared_ptr<Function> creator);
 
     void Backward();
 
@@ -25,7 +25,7 @@ public:
 public:
     Eigen::MatrixXd data_;
     Eigen::MatrixXd grad_;
-    Function *creator_ = nullptr;
+    std::shared_ptr<Function> creator_ = nullptr;
 };
 
 #endif//DEZEROCPP_VARIABLE_H

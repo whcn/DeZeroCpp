@@ -3,16 +3,18 @@
 #include "function.h"
 
 
-void Variable::SetCreator(Function *creator) { creator_ = creator; }
+void Variable::SetCreator(std::shared_ptr<Function> creator) {
+    creator_ = std::move(creator);
+}
 
 void Variable::Backward() {
-    std::queue<Function*> funcs;
+    std::queue<std::shared_ptr<Function>> funcs;
     funcs.push(creator_);
     while (!funcs.empty()) {
-        Function* f = funcs.front();
+        std::shared_ptr<Function> f = funcs.front();
         funcs.pop();
-        Variable *x = f->input_;
-        Variable *y = f->output_;
+        std::shared_ptr<Variable> x = f->input_;
+        std::shared_ptr<Variable> y = f->output_;
         x->grad_ = f->Backward(y->grad_);
         if (x->creator_ != nullptr) {
             funcs.push(x->creator_);

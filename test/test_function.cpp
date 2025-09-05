@@ -9,7 +9,7 @@ TEST(FUNCTION, SQUARE) {
     data << 1, 2, 3, 4, 5, 6;
     Variable x(data);
     Square f;
-    Variable y = f(x);
+    Variable &y = f(x);
     std::cout << "Square:\n" << y << std::endl;
 }
 
@@ -19,7 +19,7 @@ TEST(FUNCTION, EXPONENTIAL) {
 
     Variable x(data);
     Exponential f;
-    Variable y = f(x);
+    Variable &y = f(x);
 
     std::cout << "Exponential:\n" << y << std::endl;
 }
@@ -32,9 +32,9 @@ TEST(FUNCTION, BACKWARD) {
     Exponential f2;
     Square f3;
     Variable x(data);
-    Variable y1 = f1(x);
-    Variable y2 = f2(y1);
-    Variable y3 = f3(y2);
+    Variable &y1 = f1(x);
+    Variable &y2 = f2(y1);
+    Variable &y3 = f3(y2);
 
     y3.grad_ = Eigen::MatrixXd::Ones(1, 1);
     y2.grad_ = f3.Backward(y3.grad_);

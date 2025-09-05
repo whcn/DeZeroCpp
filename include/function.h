@@ -2,8 +2,9 @@
 #define DEZEROCPP_FUNCTION_H
 
 #include "variable.h"
+#include <memory>
 
-class Function {
+class Function : public std::enable_shared_from_this<Function> {
 public:
     Function() = default;
 
@@ -12,10 +13,12 @@ public:
     Variable& operator()(Variable &input) {
         Eigen::MatrixXd x = input.data_;
         Eigen::MatrixXd y = Forward(x);
-        y_ = Variable(y);
-        input_ = &input;
-        output_ = &y_;
-        output_->SetCreator(this);
+        input_ = std::shared_ptr<Variable>(&input, [](Variable*){});
+        output_ = std::make_shared<Variable>(y);
+
+        // 使用shared_from_this前本对象要由shared_ptr管理，否则会抛异常bad_weak_ptr
+        this_ = std::shared_ptr<Function>(this, [](Function*){});
+        output_->SetCreator(shared_from_this());
         return *output_;
     }
 
@@ -24,9 +27,9 @@ public:
     virtual Eigen::MatrixXd Backward(const Eigen::MatrixXd &gy) = 0;
 
 public:
-    Variable *input_ = nullptr;
-    Variable *output_ = nullptr;
-    Variable y_;
+    std::shared_ptr<Variable> input_ = nullptr;
+    std::shared_ptr<Variable> output_ = nullptr;
+    std::shared_ptr<Function> this_ = nullptr;
 };
 
 
