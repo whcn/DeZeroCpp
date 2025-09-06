@@ -75,7 +75,6 @@ TEST(FUNCTION, BACKWARD_WITH_CREATOR) {
     Variable &y2 = f2(y1);
     Variable &y3 = f3(y2);
 
-    y3.grad_ = Eigen::MatrixXd::Ones(1, 1);
     y3.Backward();
 
     float dy3 = 1;
@@ -92,7 +91,6 @@ TEST(FUNCTION, BACKWARD_WITH_HELPER_FUNC) {
 
     Variable x(data);
     Variable &y = square(exp(square(x)));
-    y.grad_ = Eigen::MatrixXd::Ones(1, 1);
     y.Backward();
 
     EXPECT_NEAR(x.grad_(0, 0), 3.29744, 1e-4);

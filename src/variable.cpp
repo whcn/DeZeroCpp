@@ -8,6 +8,10 @@ void Variable::SetCreator(std::shared_ptr<Function> creator) {
 }
 
 void Variable::Backward() {
+    if (grad_.size() == 0) {
+        grad_ = Eigen::MatrixXd::Ones(data_.rows(), data_.cols());
+    }
+
     std::queue<std::shared_ptr<Function>> funcs;
     funcs.push(creator_);
     while (!funcs.empty()) {
