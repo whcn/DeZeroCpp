@@ -75,4 +75,14 @@ static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
     return diff;
 }
 
+static Variable& square(Variable &x) {
+    std::shared_ptr<Square> f = std::make_shared<Square>();
+    return (*f)(x);
+}
+
+static Variable& exp(Variable &x) {
+    std::shared_ptr<Exponential> f = std::make_shared<Exponential>();
+    return (*f)(x);
+}
+
 #endif//DEZEROCPP_FUNCTION_H
