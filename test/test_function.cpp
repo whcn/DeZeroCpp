@@ -7,10 +7,18 @@
 TEST(FUNCTION, SQUARE) {
     Eigen::MatrixXd data(2, 3);
     data << 1, 2, 3, 4, 5, 6;
+
     Variable x(data);
     Square f;
     Variable &y = f(x);
-    std::cout << "Square:\n" << y << std::endl;
+
+    for (int i = 0; i < x.data_.rows(); ++i) {
+        for (int j = 0; j < x.data_.cols(); ++j) {
+            int expect = x.data_(i, j) * x.data_(i, j);
+            int value = y.data_(i, j);
+            EXPECT_EQ(expect, value);
+        }
+    }
 }
 
 TEST(FUNCTION, EXPONENTIAL) {
@@ -21,7 +29,13 @@ TEST(FUNCTION, EXPONENTIAL) {
     Exponential f;
     Variable &y = f(x);
 
-    std::cout << "Exponential:\n" << y << std::endl;
+    for (int i = 0; i < x.data_.rows(); ++i) {
+        for (int j = 0; j < x.data_.cols(); ++j) {
+            float expect = std::exp(x.data_(i, j));
+            float value = y.data_(i, j);
+            EXPECT_EQ(expect, value);
+        }
+    }
 }
 
 TEST(FUNCTION, BACKWARD) {
@@ -41,7 +55,12 @@ TEST(FUNCTION, BACKWARD) {
     y1.grad_ = f2.Backward(y2.grad_);
     x.grad_ = f1.Backward(y1.grad_);
 
-    std::cout << "Backward:\n" << x.grad_ << std::endl;
+    float dy3 = 1;
+    float dy2 = NumericalDiff<decltype(f3)>(f3, y2) * dy3;
+    float dy1 = NumericalDiff<decltype(f2)>(f2, y1) * dy2;
+    float dx = NumericalDiff<decltype(f1)>(f1, x) * dy1;
+
+    EXPECT_NEAR(x.grad_(0, 0), dx, 1e-4);
 }
 
 TEST(FUNCTION, BACKWARD_WITH_CREATOR) {
@@ -59,5 +78,10 @@ TEST(FUNCTION, BACKWARD_WITH_CREATOR) {
     y3.grad_ = Eigen::MatrixXd::Ones(1, 1);
     y3.Backward();
 
-    std::cout << "Backward:\n" << x.grad_ << std::endl;
+    float dy3 = 1;
+    float dy2 = NumericalDiff<decltype(f3)>(f3, y2) * dy3;
+    float dy1 = NumericalDiff<decltype(f2)>(f2, y1) * dy2;
+    float dx = NumericalDiff<decltype(f1)>(f1, x) * dy1;
+
+    EXPECT_NEAR(x.grad_(0, 0), dx, 1e-4);
 }

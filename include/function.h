@@ -61,4 +61,18 @@ public:
     }
 };
 
+template<typename FuncType>
+static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
+    Eigen::MatrixXd _x0 = x.data_.array() - eps;
+    Eigen::MatrixXd _x1 = x.data_.array() + eps;
+    Variable x0 = Variable(_x0);
+    Variable x1 = Variable(_x1);
+    FuncType f0 = f;
+    FuncType f1 = f;
+    Variable &y0 = f0(x0);
+    Variable &y1 = f1(x1);
+    float diff = (y1.data_(0, 0) - y0.data_(0, 0)) / (2 * eps);
+    return diff;
+}
+
 #endif//DEZEROCPP_FUNCTION_H
