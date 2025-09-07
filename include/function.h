@@ -75,7 +75,7 @@ public:
     }
 
     std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
-        return {};
+        return {gys[0], gys[0]};
     }
 };
 
@@ -93,11 +93,12 @@ static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
     return diff;
 }
 
-//static Variable& square(Variable &x) {
-//    std::shared_ptr<Square> f = std::make_shared<Square>();
-//    return (*f)(x);
-//}
-//
+static std::shared_ptr<Variable> square(std::shared_ptr<Variable> x) {
+    std::vector<std::shared_ptr<Variable>> xs = {x};
+    std::shared_ptr<Square> f = std::make_shared<Square>();
+    return (*f)(xs)[0];
+}
+
 //static Variable& exp(Variable &x) {
 //    std::shared_ptr<Exponential> f = std::make_shared<Exponential>();
 //    return (*f)(x);

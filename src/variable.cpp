@@ -8,20 +8,25 @@ void Variable::SetCreator(std::shared_ptr<Function> creator) {
 }
 
 void Variable::Backward() {
-//    if (grad_.size() == 0) {
-//        grad_ = Eigen::MatrixXd::Ones(data_.rows(), data_.cols());
-//    }
-//
-//    std::queue<std::shared_ptr<Function>> funcs;
-//    funcs.push(creator_);
-//    while (!funcs.empty()) {
-//        std::shared_ptr<Function> f = funcs.front();
-//        funcs.pop();
-//        std::shared_ptr<Variable> x = f->input_;
-//        std::shared_ptr<Variable> y = f->output_;
-//        x->grad_ = f->Backward(y->grad_);
-//        if (x->creator_ != nullptr) {
-//            funcs.push(x->creator_);
-//        }
-//    }
+    if (grad_.size() == 0) {
+        grad_ = Eigen::MatrixXd::Ones(data_.rows(), data_.cols());
+    }
+
+    std::queue<std::shared_ptr<Function>> funcs;
+    funcs.push(creator_);
+    while (!funcs.empty()) {
+        std::shared_ptr<Function> f = funcs.front();
+        funcs.pop();
+        auto &xs = f->input_;
+        auto &ys = f->output_;
+        std::vector<Eigen::MatrixXd> gys;
+        std::transform(ys.begin(), ys.end(), std::back_inserter(gys), [&](auto y) { return y->grad_; });
+        auto gxs = f->Backward(gys);
+        for (int i = 0; i < gxs.size(); ++i) {
+            xs[i]->grad_ = gxs[i];
+            if (xs[i]->creator_ != nullptr) {
+                funcs.push(xs[i]->creator_);
+            }
+        }
+    }
 }

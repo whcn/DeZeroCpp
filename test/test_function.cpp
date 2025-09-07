@@ -116,4 +116,13 @@ TEST(FUNCTION, ADD_WITH_HELPER_FUNC) {
     auto y = add(x0, x1);
     EXPECT_EQ(y->data_(0, 0), 5.0);
 }
+
+TEST(FUNCTION, ADD_SQUARE_BACKWARD) {
+    auto x = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 2));
+    auto y = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 3));
+    auto z = add(square(x), square(y));
+    z->Backward();
+    EXPECT_EQ(z->data_(0, 0), 13);
+    EXPECT_EQ(x->grad_(0, 0), 4);
+    EXPECT_EQ(y->grad_(0, 0), 6);
 }
