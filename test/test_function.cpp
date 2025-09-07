@@ -126,3 +126,17 @@ TEST(FUNCTION, ADD_SQUARE_BACKWARD) {
     EXPECT_EQ(x->grad_(0, 0), 4);
     EXPECT_EQ(y->grad_(0, 0), 6);
 }
+
+TEST(FUNCTION, ACCUMULATE_GRADIENT_FOR_ADD) {
+    auto x0 = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 3));
+    auto y0 = add(x0, x0);
+    y0->Backward();
+    EXPECT_EQ(y0->data_(0, 0), 6);
+    EXPECT_EQ(x0->grad_(0, 0), 2);
+
+    auto x1 = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 3));
+    auto y1 = add(add(x1, x1), x1);
+    y1->Backward();
+    EXPECT_EQ(y1->data_(0, 0), 9);
+    EXPECT_EQ(x1->grad_(0, 0), 3);
+}

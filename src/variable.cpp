@@ -23,7 +23,11 @@ void Variable::Backward() {
         std::transform(ys.begin(), ys.end(), std::back_inserter(gys), [&](auto y) { return y->grad_; });
         auto gxs = f->Backward(gys);
         for (int i = 0; i < gxs.size(); ++i) {
-            xs[i]->grad_ = gxs[i];
+            if (xs[i]->grad_.size() == 0) {
+                xs[i]->grad_ = gxs[i];
+            } else {
+                xs[i]->grad_ += gxs[i];
+            }
             if (xs[i]->creator_ != nullptr) {
                 funcs.push(xs[i]->creator_);
             }
