@@ -140,3 +140,12 @@ TEST(FUNCTION, ACCUMULATE_GRADIENT_FOR_ADD) {
     EXPECT_EQ(y1->data_(0, 0), 9);
     EXPECT_EQ(x1->grad_(0, 0), 3);
 }
+
+TEST(FUNCTION, BACKWARD_AVOID_PROCESS_VISITED_FUNC) {
+    auto x = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 2));
+    auto a = square(x);
+    auto y = add(square(a), square(a));
+    y->Backward();
+    EXPECT_EQ(y->data_(0, 0), 32);
+    EXPECT_EQ(x->grad_(0, 0), 64);
+}

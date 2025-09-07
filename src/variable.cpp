@@ -1,3 +1,4 @@
+#include <unordered_set>
 #include <queue>
 #include "variable.h"
 #include "function.h"
@@ -13,7 +14,15 @@ void Variable::Backward() {
     }
 
     std::queue<std::shared_ptr<Function>> funcs;
-    funcs.push(creator_);
+    std::unordered_set<std::shared_ptr<Function>> visited;
+    auto AddFunc = [&](std::shared_ptr<Function> func) {
+        if (func != nullptr && visited.find(func) == visited.end()) {
+            funcs.push(func);
+            visited.insert(func);
+        }
+    };
+    AddFunc(creator_);
+
     while (!funcs.empty()) {
         std::shared_ptr<Function> f = funcs.front();
         funcs.pop();
@@ -28,9 +37,7 @@ void Variable::Backward() {
             } else {
                 xs[i]->grad_ += gxs[i];
             }
-            if (xs[i]->creator_ != nullptr) {
-                funcs.push(xs[i]->creator_);
-            }
+            AddFunc(xs[i]->creator_);
         }
     }
 }
