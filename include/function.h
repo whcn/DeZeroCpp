@@ -103,4 +103,10 @@ static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
 //    return (*f)(x);
 //}
 
+static std::shared_ptr<Variable> add(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1) {
+    std::vector<std::shared_ptr<Variable>> xs = {x0, x1};
+    std::shared_ptr<Add> f = std::make_shared<Add>();
+    return (*f)(xs)[0];
+}
+
 #endif//DEZEROCPP_FUNCTION_H

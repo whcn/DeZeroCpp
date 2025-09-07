@@ -109,3 +109,11 @@ TEST(FUNCTION, ADD) {
     std::vector<std::shared_ptr<Variable>> ys = (*f)(xs);
     EXPECT_EQ(ys[0]->data_(0, 0), 5.0);
 }
+
+TEST(FUNCTION, ADD_WITH_HELPER_FUNC) {
+    auto x0 = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 2));
+    auto x1 = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 3));
+    auto y = add(x0, x1);
+    EXPECT_EQ(y->data_(0, 0), 5.0);
+}
+}
