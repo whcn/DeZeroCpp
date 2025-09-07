@@ -11,7 +11,7 @@ class Variable {
 public:
     Variable() = default;
 
-    explicit Variable(Eigen::MatrixXd &data) : data_(std::move(data)) {}
+    explicit Variable(const Eigen::MatrixXd &data) : data_(std::move(data)) {}
 
     void SetCreator(std::shared_ptr<Function> creator);
 
