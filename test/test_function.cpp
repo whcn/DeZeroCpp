@@ -149,3 +149,17 @@ TEST(FUNCTION, BACKWARD_AVOID_PROCESS_VISITED_FUNC) {
     EXPECT_EQ(y->data_(0, 0), 32);
     EXPECT_EQ(x->grad_(0, 0), 64);
 }
+
+TEST(FUNCTION, BREAK_CYCLE_REF_IN_GRAPH) {
+    std::shared_ptr<Variable> x0, x1, y0, y1 = nullptr;
+    EXPECT_EQ(x1.use_count(), 0);
+    EXPECT_EQ(y1.use_count(), 0);
+    x1 = x0 = std::make_shared<Variable>(Eigen::MatrixXd::Random(1, 1));
+    y1 = y0 = square(x0);
+    EXPECT_EQ(x1.use_count(), 3);
+    EXPECT_EQ(y1.use_count(), 2);
+    x0.reset();
+    y0.reset();
+    EXPECT_EQ(x1.use_count(), 2);
+    EXPECT_EQ(y1.use_count(), 1);
+}

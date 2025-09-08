@@ -18,13 +18,15 @@ public:
 
         std::vector<Eigen::MatrixXd> ys = Forward(xs);
         input_ = inputs;
-        std::transform(ys.begin(), ys.end(), std::back_inserter(output_),
+        std::vector<std::shared_ptr<Variable>> outputs;
+        std::transform(ys.begin(), ys.end(), std::back_inserter(outputs),
                        [](auto &y) { return std::make_shared<Variable>(y); });
 
-        for (auto &output : output_) {
+        for (auto &output : outputs) {
             output->SetCreator(shared_from_this());
+            output_.push_back(output);
         }
-        return output_;
+        return outputs;
     }
 
     virtual std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) = 0;
@@ -33,7 +35,7 @@ public:
 
 public:
     std::vector<std::shared_ptr<Variable>> input_;
-    std::vector<std::shared_ptr<Variable>> output_;
+    std::vector<std::weak_ptr<Variable>> output_;
 };
 
 

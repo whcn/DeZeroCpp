@@ -29,7 +29,7 @@ void Variable::Backward() {
         auto &xs = f->input_;
         auto &ys = f->output_;
         std::vector<Eigen::MatrixXd> gys;
-        std::transform(ys.begin(), ys.end(), std::back_inserter(gys), [&](auto y) { return y->grad_; });
+        std::transform(ys.begin(), ys.end(), std::back_inserter(gys), [&](auto y) { return y.lock()->grad_; });
         auto gxs = f->Backward(gys);
         for (int i = 0; i < gxs.size(); ++i) {
             if (xs[i]->grad_.size() == 0) {
