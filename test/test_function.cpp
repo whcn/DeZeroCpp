@@ -175,3 +175,15 @@ TEST(FUNCTION, OVERLOAD_ADD_MUL_OPERATOR) {
     EXPECT_EQ(b->grad_(0, 0), 3);
     EXPECT_EQ(c->grad_(0, 0), 1);
 }
+
+TEST(FUNCTION, BASIC_OPERATOR_WITH_SCALAR) {
+    std::shared_ptr<Variable> x = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 2.0));
+    auto y1 = -x;
+    auto y2 = 2.0 -x;
+    auto y3 = x - 1.0;
+    auto y4 = 3.0 / x;
+    EXPECT_EQ(y1->data_(0, 0), -2.0);
+    EXPECT_EQ(y2->data_(0, 0), 0);
+    EXPECT_EQ(y3->data_(0, 0), 1.0);
+    EXPECT_EQ(y4->data_(0, 0), 1.5);
+}

@@ -68,6 +68,38 @@ public:
     }
 };
 
+class Pow : public Function {
+public:
+    explicit Pow(double index) : index_(index) {}
+
+    std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
+        Eigen::MatrixXd y = xs[0].array().pow(index_).matrix();
+        return {y};
+    }
+
+    std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
+        Eigen::MatrixXd x = input_[0]->data_;
+        Eigen::MatrixXd gx = index_ * x.array().pow(index_ - 1).matrix() * gys[0];
+        return {gx};
+    }
+
+public:
+    double index_ = 1.0;
+};
+
+class Neg : public Function {
+public:
+    std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
+        return {-xs[0]};
+    }
+
+    std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
+        return {-gys[0]};
+    }
+
+public:
+    float index_ = 1.0;
+};
 
 class Add : public Function {
 public:
@@ -78,6 +110,18 @@ public:
 
     std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
         return {gys[0], gys[0]};
+    }
+};
+
+class Sub : public Function {
+public:
+    std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
+        Eigen::MatrixXd y = xs[0] - xs[1];
+        return {y};
+    }
+
+    std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
+        return {gys[0], -gys[0]};
     }
 };
 
@@ -95,50 +139,43 @@ public:
     }
 };
 
-template<typename FuncType>
-static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
-    Eigen::MatrixXd _x0 = x.data_.array() - eps;
-    Eigen::MatrixXd _x1 = x.data_.array() + eps;
-    Variable x0 = Variable(_x0);
-    Variable x1 = Variable(_x1);
-    FuncType f0 = f;
-    FuncType f1 = f;
-    Variable &y0 = f0(x0);
-    Variable &y1 = f1(x1);
-    float diff = (y1.data_(0, 0) - y0.data_(0, 0)) / (2 * eps);
-    return diff;
-}
+class Div : public Function {
+public:
+    std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
+        Eigen::MatrixXd y = xs[0].cwiseQuotient(xs[1]);
+        return {y};
+    }
 
-static std::shared_ptr<Variable> square(std::shared_ptr<Variable> x) {
-    std::vector<std::shared_ptr<Variable>> xs = {x};
-    std::shared_ptr<Square> f = std::make_shared<Square>();
-    return (*f)(xs)[0];
-}
-
-//static Variable& exp(Variable &x) {
-//    std::shared_ptr<Exponential> f = std::make_shared<Exponential>();
-//    return (*f)(x);
-//}
-
-static std::shared_ptr<Variable> add(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1) {
-    std::vector<std::shared_ptr<Variable>> xs = {x0, x1};
-    std::shared_ptr<Add> f = std::make_shared<Add>();
-    return (*f)(xs)[0];
-}
-
-static std::shared_ptr<Variable> mul(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1) {
-    std::vector<std::shared_ptr<Variable>> xs = {x0, x1};
-    std::shared_ptr<Mul> f = std::make_shared<Mul>();
-    return (*f)(xs)[0];
-}
+    std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
+        Eigen::MatrixXd x0 = input_[0]->data_;
+        Eigen::MatrixXd x1 = input_[1]->data_;
+        return {gys[0].cwiseQuotient(x1), gys[0] * (-x0.cwiseQuotient(x1.cwiseProduct(x1)))};
+    }
+};
 
 
-static std::shared_ptr<Variable> operator+(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs) {
-    return add(lhs, rhs);
-}
+std::shared_ptr<Variable> square(std::shared_ptr<Variable> x);
+std::shared_ptr<Variable> exp(std::shared_ptr<Variable> x);
+std::shared_ptr<Variable> pow(std::shared_ptr<Variable> x, double index);
+std::shared_ptr<Variable> neg(std::shared_ptr<Variable> x);
+std::shared_ptr<Variable> add(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1);
+std::shared_ptr<Variable> sub(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1);
+std::shared_ptr<Variable> mul(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1);
+std::shared_ptr<Variable> div(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1);
 
-static std::shared_ptr<Variable> operator*(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs) {
-    return mul(lhs, rhs);
-}
+std::shared_ptr<Variable> operator+(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator+(std::shared_ptr<Variable> lhs, double val);
+std::shared_ptr<Variable> operator+(double val, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator-(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator-(std::shared_ptr<Variable> lhs, double val);
+std::shared_ptr<Variable> operator-(double val, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator*(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator*(std::shared_ptr<Variable> lhs, double val);
+std::shared_ptr<Variable> operator*(double val, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator/(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator/(std::shared_ptr<Variable> lhs, double val);
+std::shared_ptr<Variable> operator/(double val, std::shared_ptr<Variable> rhs);
+std::shared_ptr<Variable> operator-(std::shared_ptr<Variable> x);
+std::shared_ptr<Variable> operator^(std::shared_ptr<Variable> x, double index);
 
 #endif//DEZEROCPP_FUNCTION_H
