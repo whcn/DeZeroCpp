@@ -163,3 +163,15 @@ TEST(FUNCTION, BREAK_CYCLE_REF_IN_GRAPH) {
     EXPECT_EQ(x1.use_count(), 2);
     EXPECT_EQ(y1.use_count(), 1);
 }
+
+TEST(FUNCTION, OVERLOAD_ADD_MUL_OPERATOR) {
+    std::shared_ptr<Variable> a = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 3));
+    std::shared_ptr<Variable> b = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 2));
+    std::shared_ptr<Variable> c = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 1));
+    auto y = a * b + c;
+    y->Backward();
+    EXPECT_EQ(y->data_(0, 0), 7);
+    EXPECT_EQ(a->grad_(0, 0), 2);
+    EXPECT_EQ(b->grad_(0, 0), 3);
+    EXPECT_EQ(c->grad_(0, 0), 1);
+}

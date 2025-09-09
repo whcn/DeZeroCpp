@@ -81,6 +81,20 @@ public:
     }
 };
 
+class Mul : public Function {
+public:
+    std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
+        Eigen::MatrixXd y = xs[0] * xs[1];
+        return {y};
+    }
+
+    std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
+        Eigen::MatrixXd x0 = input_[0]->data_;
+        Eigen::MatrixXd x1 = input_[1]->data_;
+        return {gys[0] * x1, gys[0] * x0};
+    }
+};
+
 template<typename FuncType>
 static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
     Eigen::MatrixXd _x0 = x.data_.array() - eps;
@@ -110,6 +124,21 @@ static std::shared_ptr<Variable> add(std::shared_ptr<Variable> x0, std::shared_p
     std::vector<std::shared_ptr<Variable>> xs = {x0, x1};
     std::shared_ptr<Add> f = std::make_shared<Add>();
     return (*f)(xs)[0];
+}
+
+static std::shared_ptr<Variable> mul(std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1) {
+    std::vector<std::shared_ptr<Variable>> xs = {x0, x1};
+    std::shared_ptr<Mul> f = std::make_shared<Mul>();
+    return (*f)(xs)[0];
+}
+
+
+static std::shared_ptr<Variable> operator+(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs) {
+    return add(lhs, rhs);
+}
+
+static std::shared_ptr<Variable> operator*(std::shared_ptr<Variable> lhs, std::shared_ptr<Variable> rhs) {
+    return mul(lhs, rhs);
 }
 
 #endif//DEZEROCPP_FUNCTION_H
