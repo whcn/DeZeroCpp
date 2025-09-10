@@ -8,6 +8,10 @@ void Variable::SetCreator(std::shared_ptr<Function> creator) {
     creator_ = std::move(creator);
 }
 
+void Variable::ClearGrad() {
+    grad_.resize(0, 0);
+}
+
 void Variable::Backward() {
     if (grad_.size() == 0) {
         grad_ = Eigen::MatrixXd::Ones(data_.rows(), data_.cols());

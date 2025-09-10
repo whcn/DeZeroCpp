@@ -168,7 +168,23 @@ public:
     }
 };
 
+class Sin : public Function {
+public:
+    Sin() { name_ = "Sin"; }
 
+    std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
+        Eigen::MatrixXd y = xs[0].array().sin().matrix();
+        return {y};
+    }
+
+    std::vector<Eigen::MatrixXd> Backward(const std::vector<Eigen::MatrixXd> &gys) override {
+        Eigen::MatrixXd x = input_[0]->data_;
+        return {gys[0] * x.array().cos().matrix()};
+    }
+};
+
+
+std::shared_ptr<Variable> sin(std::shared_ptr<Variable> x0);
 std::shared_ptr<Variable> square(std::shared_ptr<Variable> x);
 std::shared_ptr<Variable> exp(std::shared_ptr<Variable> x);
 std::shared_ptr<Variable> pow(std::shared_ptr<Variable> x, double index);

@@ -15,6 +15,12 @@ static float NumericalDiff(FuncType f, Variable &x, float eps = 1e-4) {
     return diff;
 }
 
+std::shared_ptr<Variable> sin(std::shared_ptr<Variable> x0) {
+    std::vector<std::shared_ptr<Variable>> xs = {x0};
+    std::shared_ptr<Sin> f = std::make_shared<Sin>();
+    return (*f)(xs)[0];
+}
+
 std::shared_ptr<Variable> square(std::shared_ptr<Variable> x) {
     std::vector<std::shared_ptr<Variable>> xs = {x};
     std::shared_ptr<Square> f = std::make_shared<Square>();

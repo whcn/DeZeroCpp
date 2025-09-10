@@ -15,6 +15,8 @@ public:
 
     void SetCreator(std::shared_ptr<Function> creator);
 
+    void ClearGrad();
+
     void Backward();
 
     friend std::ostream &operator<<(std::ostream &os, const Variable &var) {

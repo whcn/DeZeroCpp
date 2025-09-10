@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <numbers>
 
 
 TEST(FUNCTION, SQUARE) {
@@ -207,4 +208,33 @@ TEST(FUNCTION, COMPLEX_OPTIMIZE_FUNC) {
     y->name_ = "y";
     z->name_ = "z";
     PlotDotGraph(z, "goldstein.pdf");
+}
+
+TEST(FUNCTION, SIN) {
+    std::shared_ptr<Variable> x = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, std::numbers::pi / 4.0));
+    auto y = sin(x);
+    y->Backward();
+    EXPECT_NEAR(y->data_(0, 0), 0.7071, 1e-4);
+    EXPECT_NEAR(x->grad_(0, 0), 0.7071, 1e-4);
+}
+
+TEST(FUNCTION, GRADIENT_DESCENT) {
+    auto rosenbrock = [](std::shared_ptr<Variable> x0, std::shared_ptr<Variable> x1){
+        return 100 * ((x1 - (x0 ^ 2)) ^ 2) + ((x0 - 1) ^ 2);
+    };
+
+    std::shared_ptr<Variable> x0 = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 0.0));
+    std::shared_ptr<Variable> x1 = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 2.0));
+    double lr = 0.001;
+    size_t iters = 15000;
+    for (size_t i = 0; i < iters; ++i) {
+        auto y = rosenbrock(x0, x1);
+        x0->ClearGrad();
+        x1->ClearGrad();
+        y->Backward();
+        x0->data_ -= lr * x0->grad_;
+        x1->data_ -= lr * x1->grad_;
+    }
+    EXPECT_NEAR(x0->data_(0, 0), 1.0, 1e-2);
+    EXPECT_NEAR(x1->data_(0, 0), 1.0, 1e-2);
 }
