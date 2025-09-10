@@ -36,11 +36,14 @@ public:
 public:
     std::vector<std::shared_ptr<Variable>> input_;
     std::vector<std::weak_ptr<Variable>> output_;
+    std::string name_;
 };
 
 
 class Square : public Function {
 public:
+    Square() { name_ = "Square"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0].cwiseProduct(xs[0]);
         return {y};
@@ -56,6 +59,8 @@ public:
 
 class Exp : public Function {
 public:
+    Exp() { name_ = "Exp"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0].array().exp();
         return {y};
@@ -70,7 +75,7 @@ public:
 
 class Pow : public Function {
 public:
-    explicit Pow(double index) : index_(index) {}
+    explicit Pow(double index) : index_(index) { name_ = "Pow"; }
 
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0].array().pow(index_).matrix();
@@ -89,6 +94,8 @@ public:
 
 class Neg : public Function {
 public:
+    Neg() { name_ = "Neg"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         return {-xs[0]};
     }
@@ -103,6 +110,8 @@ public:
 
 class Add : public Function {
 public:
+    Add() { name_ = "Add"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0] + xs[1];
         return {y};
@@ -115,6 +124,8 @@ public:
 
 class Sub : public Function {
 public:
+    Sub() { name_ = "Sub"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0] - xs[1];
         return {y};
@@ -127,6 +138,8 @@ public:
 
 class Mul : public Function {
 public:
+    Mul() { name_ = "Mul"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0] * xs[1];
         return {y};
@@ -141,6 +154,8 @@ public:
 
 class Div : public Function {
 public:
+    Div() { name_ = "Div"; }
+
     std::vector<Eigen::MatrixXd> Forward(const std::vector<Eigen::MatrixXd> &xs) override {
         Eigen::MatrixXd y = xs[0].cwiseQuotient(xs[1]);
         return {y};

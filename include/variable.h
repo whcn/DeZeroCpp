@@ -26,6 +26,7 @@ public:
     Eigen::MatrixXd data_;
     Eigen::MatrixXd grad_;
     std::shared_ptr<Function> creator_ = nullptr;
+    std::string name_;
 };
 
 #endif//DEZEROCPP_VARIABLE_H

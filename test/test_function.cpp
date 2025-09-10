@@ -1,4 +1,5 @@
 #include "function.h"
+#include "plot_graph.h"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -201,4 +202,9 @@ TEST(FUNCTION, COMPLEX_OPTIMIZE_FUNC) {
     EXPECT_EQ(z->data_(0, 0), 1876);
     EXPECT_EQ(x->grad_(0, 0), -5376);
     EXPECT_EQ(y->grad_(0, 0), 8064);
+
+    x->name_ = "x";
+    y->name_ = "y";
+    z->name_ = "z";
+    PlotDotGraph(z, "goldstein.pdf");
 }
