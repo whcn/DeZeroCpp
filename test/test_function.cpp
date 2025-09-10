@@ -187,3 +187,18 @@ TEST(FUNCTION, BASIC_OPERATOR_WITH_SCALAR) {
     EXPECT_EQ(y3->data_(0, 0), 1.0);
     EXPECT_EQ(y4->data_(0, 0), 1.5);
 }
+
+TEST(FUNCTION, COMPLEX_OPTIMIZE_FUNC) {
+    auto goldstein = [](std::shared_ptr<Variable> x, std::shared_ptr<Variable> y){
+        return (1 + ((x + y + 1) ^ 2) * (19 - 14 * x + 3 * (x ^ 2) - 14 * y + 6 * x * y + 3 * (y ^ 2))) *
+               (30 + ((2 * x - 3 * y) ^ 2) * (18 - 32 * x + 12 * (x ^ 2) + 48 * y - 36 * x * y + 27 * (y ^ 2)));
+    };
+
+    std::shared_ptr<Variable> x = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 1.0));
+    std::shared_ptr<Variable> y = std::make_shared<Variable>(Eigen::MatrixXd::Constant(1, 1, 1.0));
+    auto z = goldstein(x, y);
+    z->Backward();
+    EXPECT_EQ(z->data_(0, 0), 1876);
+    EXPECT_EQ(x->grad_(0, 0), -5376);
+    EXPECT_EQ(y->grad_(0, 0), 8064);
+}
